@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Clone</title>
+    <link rel="stylesheet" href="final-style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen">
+            <div class="container">
+                <h1>💬 Chat App</h1>
+                <input type="email" id="loginEmail" placeholder="Email" />
+                <input type="password" id="loginPassword" placeholder="Password" />
+                <button onclick="login()">Login</button>
+                <p class="link" onclick="showRegister()">Don't have an account? Register</p>
+            </div>
+        </div>
+
+        <!-- Register Screen -->
+        <div id="registerScreen" class="screen hidden">
+            <div class="container">
+                <h1>Create Account</h1>
+                <input type="text" id="registerName" placeholder="Full Name" />
+                <input type="email" id="registerEmail" placeholder="Email" />
+                <input type="password" id="registerPassword" placeholder="Password" />
+                <button onclick="register()">Register</button>
+                <p class="link" onclick="showLogin()">Already have an account? Login</p>
+            </div>
+        </div>
+
+        <!-- Main App Screen with Tabs -->
+        <div id="mainScreen" class="screen hidden">
+            <div class="header">
+                <h2>WhatsApp</h2>
+                <div class="header-right">
+                    <button class="icon-btn" onclick="showSettings()">⚙️</button>
+                </div>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <div class="tab-item active" onclick="switchTab('status')">Status</div>
+                <div class="tab-item" onclick="switchTab('calls')">Calls</div>
+                <div class="tab-item" onclick="switchTab('chats')">Chats</div>
+            </div>
+
+            <!-- Status Tab -->
+            <div id="statusTab" class="tab-content active">
+                <div class="my-status-card" onclick="showAddStatus()">
+                    <div class="status-avatar">
+                        <img id="myStatusPhoto" style="display: none; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+                        <span id="myStatusIcon">👤</span>
+                        <div class="add-status-btn">+</div>
+                    </div>
+                    <div class="status-info">
+                        <div class="status-name">My Status</div>
+                        <div class="status-time">Tap to add status</div>
+                    </div>
+                </div>
+                <div class="section-title">Recent updates</div>
+                <div id="statusList"></div>
+            </div>
+
+            <!-- Calls Tab -->
+            <div id="callsTab" class="tab-content">
+                <div id="callsList"></div>
+            </div>
+
+            <!-- Chats Tab -->
+            <div id="chatsTab" class="tab-content">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="🔍 Search users..." oninput="searchUsers()" />
+                </div>
+                <div id="chatList"></div>
+            </div>
+        </div>
+
+        <!-- Add Status Screen -->
+        <div id="addStatusScreen" class="screen hidden">
+            <div class="header">
+                <button class="back-btn" onclick="backToMain()">←</button>
+                <h2>Add Status</h2>
+                <div></div>
+            </div>
+            <div class="status-add-container">
+                <textarea id="statusText" placeholder="Type a status..." maxlength="200"></textarea>
+                <div class="status-add-options">
+                    <button onclick="document.getElementById('statusPhotoInput').click()">📷 Add Photo</button>
+                    <input type="file" id="statusPhotoInput" accept="image/*" style="display: none;" onchange="previewStatusPhoto()" />
+                </div>
+                <div id="statusPhotoPreview" class="status-photo-preview hidden"></div>
+                <button onclick="postStatus()" style="margin-top: 20px;">Post Status</button>
+            </div>
+        </div>
+
+        <!-- View Status Screen -->
+        <div id="viewStatusScreen" class="screen hidden">
+            <div class="status-viewer">
+                <div class="status-header">
+                    <button class="back-btn" onclick="backToMain()">←</button>
+                    <div class="status-user-info">
+                        <span id="statusUserName"></span>
+                        <span id="statusTime"></span>
+                    </div>
+                </div>
+                <div class="status-content">
+                    <img id="statusImage" style="display: none;" />
+                    <p id="statusTextContent"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settingsScreen" class="screen hidden">
+            <div class="header">
+                <button class="back-btn" onclick="backToMain()">←</button>
+                <h2>Settings</h2>
+                <div></div>
+            </div>
+            <div class="settings-container">
+                <div class="settings-item" onclick="showProfile()">
+                    <span>👤 Profile</span>
+                    <span>→</span>
+                </div>
+                <div class="settings-item" onclick="logout()">
+                    <span>🚪 Logout</span>
+                    <span>→</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profileScreen" class="screen hidden">
+            <div class="header">
+                <button class="back-btn" onclick="showSettings()">←</button>
+                <h2>Profile</h2>
+                <div></div>
+            </div>
+            <div class="profile-container">
+                <div class="profile-avatar">
+                    <img id="profileImage" style="display: none; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+                    <span id="profileIcon">👤</span>
+                </div>
+                <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="uploadPhoto()" />
+                <button onclick="document.getElementById('photoInput').click()" style="margin-top: 20px; padding: 10px 20px; width: auto;">Change Photo</button>
+                <h2 id="profileName" style="margin-top: 20px;"></h2>
+                <p id="profileEmail"></p>
+                <button onclick="showSettings()" style="margin-top: 30px;">Back</button>
+            </div>
+        </div>
+
+        <!-- Chat Screen -->
+        <div id="chatScreen" class="screen hidden">
+            <div class="header">
+                <button class="back-btn" onclick="backToMain()">←</button>
+                <div class="chat-header-user" onclick="showOtherUserProfile()" style="cursor: pointer;">
+                    <img id="chatHeaderPhoto" class="header-avatar" style="display: none;" />
+                    <span id="chatHeaderIcon" class="header-avatar">👤</span>
+                    <div class="chat-header-user-info">
+                        <h2 id="chatUserName"></h2>
+                        <span id="chatUserStatus" class="chat-user-status">Online</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="call-btn" onclick="startVideoCall()">📹</button>
+                    <button class="call-btn" onclick="startAudioCall()">📞</button>
+                </div>
+            </div>
+            <div id="messages"></div>
+            <div id="replyPreview" class="reply-preview hidden">
+                <div class="reply-preview-content">
+                    <div class="reply-preview-label">Replying to</div>
+                    <div id="replyText" class="reply-preview-text"></div>
+                </div>
+                <button class="cancel-reply-btn" onclick="cancelReply()">✕</button>
+            </div>
+            <div class="input-container">
+                <button class="attach-btn" onclick="document.getElementById('photoAttach').click()">📎</button>
+                <input type="file" id="photoAttach" accept="image/*" style="display: none;" onchange="attachPhoto()" />
+                <button class="emoji-btn" onclick="toggleEmojiPicker()">😊</button>
+                <input type="text" id="messageInput" placeholder="Type a message..." oninput="handleTyping()" />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+            <div id="emojiPicker" class="emoji-picker hidden">
+                <div class="emoji-grid" id="emojiGrid"></div>
+            </div>
+        </div>
+
+        <!-- Other User Profile Screen -->
+        <div id="otherUserProfileScreen" class="screen hidden">
+            <div class="header">
+                <button class="back-btn" onclick="backToChatFromProfile()">←</button>
+                <h2>Profile</h2>
+                <div></div>
+            </div>
+            <div class="profile-container">
+                <div class="profile-avatar">
+                    <img id="otherProfileImage" style="display: none; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+                    <span id="otherProfileIcon">👤</span>
+                </div>
+                <h2 id="otherProfileName" style="margin-top: 20px;"></h2>
+                <p id="otherProfileEmail"></p>
+                <p id="otherProfileStatus" style="margin-top: 10px;"></p>
+                <button onclick="backToChatFromProfile()" style="margin-top: 30px;">Back to Chat</button>
+            </div>
+        </div>
+
+        <!-- Audio Call Screen -->
+        <div id="audioCallScreen" class="screen hidden">
+            <div class="call-container">
+                <div class="call-avatar">
+                    <img id="callUserPhoto" style="display: none; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+                    <span id="callUserIcon">👤</span>
+                </div>
+                <h2 id="callingUserName"></h2>
+                <p id="callStatus">Calling...</p>
+                <div class="call-buttons">
+                    <button class="end-call-btn" onclick="endCall()">End Call</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Call Screen -->
+        <div id="videoCallScreen" class="screen hidden">
+            <div class="video-call-container">
+                <div class="video-call-avatar">
+                    <img id="videoCallUserPhoto" style="display: none; width: 100%; height: 100%; border-radius: 20px; object-fit: cover;" />
+                    <span id="videoCallUserIcon">👤</span>
+                </div>
+                <div class="video-call-info">
+                    <h2 id="videoCallingUserName"></h2>
+                    <p id="videoCallStatus">Calling...</p>
+                </div>
+                <div class="video-call-buttons">
+                    <button class="end-call-btn" onclick="endVideoCall()">End Call</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Preview Modal -->
+        <div id="imageModal" class="image-modal hidden" onclick="closeImageModal()">
+            <button class="close-modal-btn" onclick="closeImageModal()">✕</button>
+            <img id="modalImage" src="" alt="Preview" />
+        </div>
+    </div>
+
+    <script src="final-app.js"></script>
+</body>
+</html>
