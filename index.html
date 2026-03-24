@@ -5,632 +5,248 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HeyApp</title>
     <link rel="stylesheet" href="final-style.css">
-    <link rel="stylesheet" href="extra-style.css">
 </head>
 <body>
-<div id="app">
-
-<!-- App Lock Screen -->
-<div id="appLockScreen" class="screen hidden">
-    <div class="container">
-        <h1>� HeyApp</h1>
-        <p style="text-align:center;color:#666;margin-bottom:20px;">Enter PIN to unlock</p>
-        <input type="password" id="lockPinInput" placeholder="Enter PIN" maxlength="4" />
-        <button onclick="unlockApp()">Unlock</button>
-    </div>
-</div>
-
-<!-- Login Screen -->
-<div id="loginScreen" class="screen hidden">
-    <div class="container">
-        <h1>💬 HeyApp</h1>
-        <input type="email" id="loginEmail" placeholder="Email" />
-        <input type="password" id="loginPassword" placeholder="Password" />
-        <button onclick="login()">Login</button>
-        <p class="link" onclick="showRegister()">Don't have an account? Register</p>
-    </div>
-</div>
-
-<!-- Register Screen -->
-<div id="registerScreen" class="screen hidden">
-    <div class="container">
-        <h1>Create Account</h1>
-        <input type="text" id="registerName" placeholder="Full Name" />
-        <input type="email" id="registerEmail" placeholder="Email" />
-        <input type="password" id="registerPassword" placeholder="Password (min 6 chars)" />
-        <button onclick="register()">Register</button>
-        <p class="link" onclick="showLogin()">Already have an account? Login</p>
-    </div>
-</div>
-
-<!-- Main Screen -->
-<div id="mainScreen" class="screen hidden">
-    <div class="header">
-        <h2>HeyApp</h2>
-        <div class="header-right">
-            <button class="icon-btn" onclick="toggleDarkMode()" id="darkModeBtn">🌙</button>
-            <button class="icon-btn" onclick="showNewGroup()">👥</button>
-            <button class="icon-btn" onclick="showSettings()">⚙️</button>
-        </div>
-    </div>
-    <div class="tab-navigation">
-        <div class="tab-item active" onclick="switchTab('status')">Status</div>
-        <div class="tab-item" onclick="switchTab('calls')">Calls</div>
-        <div class="tab-item" onclick="switchTab('chats')">Chats</div>
-    </div>
-    <div id="statusTab" class="tab-content active">
-        <div class="my-status-card" onclick="showAddStatus()">
-            <div class="status-avatar">
-                <img id="myStatusPhoto" style="display:none;width:100%;height:100%;border-radius:50%;object-fit:cover;" />
-                <span id="myStatusIcon">👤</span>
-                <div class="add-status-btn">+</div>
-            </div>
-            <div class="status-info">
-                <div class="status-name">My Status</div>
-                <div class="status-time">Tap to add status</div>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen">
+            <div class="container">
+                <h1>💬 HeyApp</h1>
+                <input type="email" id="loginEmail" placeholder="Email" />
+                <input type="password" id="loginPassword" placeholder="Password" />
+                <button onclick="login()">Login</button>
+                <p class="link" onclick="showRegister()">Don't have an account? Register</p>
             </div>
         </div>
-        <div class="section-title">Recent updates</div>
-        <div id="statusList"></div>
-    </div>
-    <div id="callsTab" class="tab-content">
-        <div id="callsList"></div>
-    </div>
-    <div id="chatsTab" class="tab-content">
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="🔍 Search users..." oninput="searchUsers()" />
-        </div>
-        <div id="chatList"></div>
-    </div>
-</div>
 
-<!-- Add Status -->
-<div id="addStatusScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="backToMain()">←</button>
-        <h2>Add Status</h2><div></div>
-    </div>
-    <div class="status-add-container">
-        <textarea id="statusText" placeholder="Type a status..." maxlength="200"></textarea>
-        <div class="status-add-options">
-            <button onclick="document.getElementById('statusPhotoInput').click()">📷 Photo</button>
-            <input type="file" id="statusPhotoInput" accept="image/*" style="display:none;" onchange="previewStatusPhoto()" />
-        </div>
-        <div id="statusPhotoPreview" class="status-photo-preview hidden"></div>
-        <button onclick="postStatus()" style="margin-top:20px;">Post Status</button>
-    </div>
-</div>
-
-<!-- View Status -->
-<div id="viewStatusScreen" class="screen hidden">
-    <div class="status-viewer">
-        <div class="status-header">
-            <button class="back-btn" onclick="backToMain()">←</button>
-            <div class="status-user-info">
-                <span id="statusUserName"></span>
-                <span id="statusTime"></span>
+        <!-- Register Screen -->
+        <div id="registerScreen" class="screen hidden">
+            <div class="container">
+                <h1>Create Account</h1>
+                <input type="text" id="registerName" placeholder="Full Name" />
+                <input type="email" id="registerEmail" placeholder="Email" />
+                <input type="password" id="registerPassword" placeholder="Password" />
+                <button onclick="register()">Register</button>
+                <p class="link" onclick="showLogin()">Already have an account? Login</p>
             </div>
         </div>
-        <div class="status-content">
-            <img id="statusImage" style="display:none;" />
-            <p id="statusTextContent"></p>
-        </div>
-    </div>
-</div>
 
-<!-- Settings -->
-<div id="settingsScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="backToMain()">←</button>
-        <h2>Settings</h2><div></div>
-    </div>
-    <div class="settings-container">
-        <div class="settings-item" onclick="showProfile()"><span>👤 Profile</span><span>→</span></div>
-        <div class="settings-item" onclick="showPrivacySettings()"><span>� Privacy</span><span>→</span></div>
-        <div class="settings-item" onclick="showChatSettings()"><span>� Chat Settings</span><span>→</span></div>
-        <div class="settings-item" onclick="showNotificationSettings()"><span>🔔 Notifications</span><span>→</span></div>
-        <div class="settings-item" onclick="showAppLockSettings()"><span>🔒 App Lock</span><span>→</span></div>
-        <div class="settings-item" onclick="show2FA()"><span>🔐 Two-Factor Auth</span><span>→</span></div>
-        <div class="settings-item" onclick="showLoginHistory()"><span>📋 Login History</span><span>→</span></div>
-        <div class="settings-item" onclick="toggleDarkMode()"><span>🌙 Dark Mode</span><span id="darkModeStatus">Off</span></div>
-        <div class="settings-item" onclick="showLanguageSettings()"><span>🌐 Language</span><span id="currentLang">English</span></div>
-        <div class="settings-item" onclick="showAutoReply()"><span>🤖 Auto Reply</span><span>→</span></div>
-        <div class="settings-item" onclick="showArchive()"><span>📦 Archived Chats</span><span>→</span></div>
-        <div class="settings-item" onclick="logout()"><span>🚪 Logout</span><span>→</span></div>
-        <div class="settings-item" onclick="deleteAccount()" style="color:red;"><span>❌ Delete Account</span><span>→</span></div>
-    </div>
-</div>
+        <!-- Main App Screen with Tabs -->
+        <div id="mainScreen" class="screen hidden">
+            <div class="header">
+                <h2>HeyApp</h2>
+                <div class="header-right">
+                    <button class="icon-btn" onclick="showSettings()">⚙️</button>
+                </div>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <div class="tab-item active" onclick="switchTab('status')">Status</div>
+                <div class="tab-item" onclick="switchTab('calls')">Calls</div>
+                <div class="tab-item" onclick="switchTab('chats')">Chats</div>
+            </div>
 
-<!-- Privacy Settings -->
-<div id="privacyScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showSettings()">←</button>
-        <h2>Privacy</h2><div></div>
-    </div>
-    <div class="settings-container">
-        <div class="settings-item" onclick="toggleLastSeen()"><span>👁️ Last Seen</span><span id="lastSeenStatus">Everyone</span></div>
-        <div class="settings-item" onclick="toggleReadReceipts()"><span>✓✓ Read Receipts</span><span id="readReceiptsStatus">On</span></div>
-        <div class="settings-item" onclick="showBlockedUsers()"><span>🚫 Blocked Users</span><span>→</span></div>
-    </div>
-</div>
+            <!-- Status Tab -->
+            <div id="statusTab" class="tab-content active">
+                <div class="my-status-card" onclick="showAddStatus()">
+                    <div class="status-avatar">
+                        <img id="myStatusPhoto" style="display: none; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+                        <span id="myStatusIcon">👤</span>
+                        <div class="add-status-btn">+</div>
+                    </div>
+                    <div class="status-info">
+                        <div class="status-name">My Status</div>
+                        <div class="status-time">Tap to add status</div>
+                    </div>
+                </div>
+                <div class="section-title">Recent updates</div>
+                <div id="statusList"></div>
+            </div>
 
-<!-- Chat Settings -->
-<div id="chatSettingsScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showSettings()">←</button>
-        <h2>Chat Settings</h2><div></div>
-    </div>
-    <div class="settings-container">
-        <div class="settings-item">
-            <span>🔤 Font Size</span>
-            <select onchange="changeFontSize(this.value)" style="border:none;background:transparent;font-size:14px;">
-                <option value="14">Small</option>
-                <option value="16" selected>Medium</option>
-                <option value="18">Large</option>
-            </select>
-        </div>
-        <div class="settings-item" onclick="changeChatWallpaper()"><span>🖼️ Chat Wallpaper</span><span>→</span></div>
-        <div class="settings-item" onclick="changeThemeColor()"><span>🎨 Theme Color</span><span>→</span></div>
-    </div>
-</div>
+            <!-- Calls Tab -->
+            <div id="callsTab" class="tab-content">
+                <div id="callsList"></div>
+            </div>
 
-<!-- Notification Settings -->
-<div id="notificationScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showSettings()">←</button>
-        <h2>Notifications</h2><div></div>
-    </div>
-    <div class="settings-container">
-        <div class="settings-item" onclick="toggleNotificationSound()"><span>🔔 Sound</span><span id="soundStatus">On</span></div>
-        <div class="settings-item" onclick="toggleDND()"><span>🌙 Do Not Disturb</span><span id="dndStatus">Off</span></div>
-    </div>
-</div>
-
-<!-- App Lock Settings -->
-<div id="appLockSettingsScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showSettings()">←</button>
-        <h2>App Lock</h2><div></div>
-    </div>
-    <div style="padding:20px;">
-        <div class="settings-item" onclick="toggleAppLock()"><span>🔒 App Lock</span><span id="appLockStatus">Off</span></div>
-        <div id="pinSetupDiv" class="hidden" style="margin-top:20px;">
-            <input type="password" id="newPinInput" placeholder="Set 4-digit PIN" maxlength="4" />
-            <button onclick="savePin()" style="margin-top:10px;">Save PIN</button>
-        </div>
-    </div>
-</div>
-
-<!-- Profile -->
-<div id="profileScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showSettings()">←</button>
-        <h2>Profile</h2><div></div>
-    </div>
-    <div class="profile-container">
-        <div class="profile-avatar">
-            <img id="profileImage" style="display:none;width:100%;height:100%;border-radius:50%;object-fit:cover;" />
-            <span id="profileIcon">👤</span>
-        </div>
-        <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="uploadPhoto()" />
-        <button onclick="document.getElementById('photoInput').click()" style="margin-top:20px;padding:10px 20px;width:auto;">📷 Change Photo</button>
-        <button onclick="showQRCode()" style="margin-top:10px;padding:10px 20px;width:auto;background:#764ba2;">📱 My QR Code</button>
-        <h2 id="profileName" style="margin-top:20px;"></h2>
-        <p id="profileEmail"></p>
-        <div style="margin-top:20px;width:100%;max-width:400px;">
-            <input type="text" id="usernameInput" placeholder="@username" style="margin-bottom:10px;" />
-            <input type="text" id="bioInput" placeholder="Add bio..." style="margin-bottom:10px;" />
-            <button onclick="saveProfile()" style="padding:10px 20px;width:auto;">Save</button>
-        </div>
-        <p id="profileUsername" style="margin-top:5px;color:#667eea;"></p>
-        <p id="profileBio" style="margin-top:5px;color:#666;font-style:italic;"></p>
-    </div>
-</div>
-
-<!-- Blocked Users -->
-<div id="blockedUsersScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showPrivacySettings()">←</button>
-        <h2>Blocked Users</h2><div></div>
-    </div>
-    <div id="blockedUsersList" style="flex:1;overflow-y:auto;"></div>
-</div>
-
-<!-- Create Group -->
-<div id="createGroupScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="backToMain()">←</button>
-        <h2>New Group</h2><div></div>
-    </div>
-    <div style="padding:20px;">
-        <input type="file" id="groupPhotoInput" accept="image/*" style="display:none;" onchange="previewGroupPhoto()" />
-        <div style="text-align:center;margin-bottom:20px;">
-            <div id="groupPhotoPreview" onclick="document.getElementById('groupPhotoInput').click()" style="width:80px;height:80px;border-radius:50%;background:#667eea;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto;cursor:pointer;">👥</div>
-            <p style="font-size:12px;color:#999;margin-top:5px;">Tap to add photo</p>
-        </div>
-        <input type="text" id="groupName" placeholder="Group Name" />
-        <input type="text" id="groupDescription" placeholder="Group Description (optional)" style="margin-top:10px;" />
-        <p style="margin:15px 0 10px;font-weight:600;">Select Members:</p>
-        <div id="groupMembersList"></div>
-        <button onclick="createGroup()" style="margin-top:20px;">Create Group</button>
-    </div>
-</div>
-
-<!-- Chat Screen -->
-<div id="chatScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="backToMain()">←</button>
-        <div class="chat-header-user" onclick="showOtherUserProfile()" style="cursor:pointer;">
-            <img id="chatHeaderPhoto" class="header-avatar" style="display:none;" />
-            <span id="chatHeaderIcon" class="header-avatar">👤</span>
-            <div class="chat-header-user-info">
-                <h2 id="chatUserName"></h2>
-                <span id="chatUserStatus" class="chat-user-status">Online</span>
+            <!-- Chats Tab -->
+            <div id="chatsTab" class="tab-content">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="🔍 Search users..." oninput="searchUsers()" />
+                </div>
+                <div id="chatList"></div>
             </div>
         </div>
-        <div class="header-right">
-            <button class="call-btn" onclick="showChatMenu()">⋮</button>
-            <button class="call-btn" onclick="startVideoCall()">📹</button>
-            <button class="call-btn" onclick="startAudioCall()">📞</button>
+
+        <!-- Add Status Screen -->
+        <div id="addStatusScreen" class="screen hidden">
+            <div class="header">
+                <button class="back-btn" onclick="backToMain()">←</button>
+                <h2>Add Status</h2>
+                <div></div>
+            </div>
+            <div class="status-add-container">
+                <textarea id="statusText" placeholder="Type a status..." maxlength="200"></textarea>
+                <div class="status-add-options">
+                    <button onclick="document.getElementById('statusPhotoInput').click()">📷 Add Photo</button>
+                    <input type="file" id="statusPhotoInput" accept="image/*" style="display: none;" onchange="previewStatusPhoto()" />
+                </div>
+                <div id="statusPhotoPreview" class="status-photo-preview hidden"></div>
+                <button onclick="postStatus()" style="margin-top: 20px;">Post Status</button>
+            </div>
+        </div>
+
+        <!-- View Status Screen -->
+        <div id="viewStatusScreen" class="screen hidden">
+            <div class="status-viewer">
+                <div class="status-header">
+                    <button class="back-btn" onclick="backToMain()">←</button>
+                    <div class="status-user-info">
+                        <span id="statusUserName"></span>
+                        <span id="statusTime"></span>
+                    </div>
+                </div>
+                <div class="status-content">
+                    <img id="statusImage" style="display: none;" />
+                    <p id="statusTextContent"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div id="settingsScreen" class="screen hidden">
+            <div class="header">
+                <button class="back-btn" onclick="backToMain()">←</button>
+                <h2>Settings</h2>
+                <div></div>
+            </div>
+            <div class="settings-container">
+                <div class="settings-item" onclick="showProfile()">
+                    <span>👤 Profile</span>
+                    <span>→</span>
+                </div>
+                <div class="settings-item" onclick="logout()">
+                    <span>🚪 Logout</span>
+                    <span>→</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profileScreen" class="screen hidden">
+            <div class="header">
+                <button class="back-btn" onclick="showSettings()">←</button>
+                <h2>Profile</h2>
+                <div></div>
+            </div>
+            <div class="profile-container">
+                <div class="profile-avatar">
+                    <img id="profileImage" style="display: none; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+                    <span id="profileIcon">👤</span>
+                </div>
+                <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="uploadPhoto()" />
+                <button onclick="document.getElementById('photoInput').click()" style="margin-top: 20px; padding: 10px 20px; width: auto;">Change Photo</button>
+                <h2 id="profileName" style="margin-top: 20px;"></h2>
+                <p id="profileEmail"></p>
+                <button onclick="showSettings()" style="margin-top: 30px;">Back</button>
+            </div>
+        </div>
+
+        <!-- Chat Screen -->
+        <div id="chatScreen" class="screen hidden">
+            <div class="header">
+                <button class="back-btn" onclick="backToMain()">←</button>
+                <div class="chat-header-user" onclick="showOtherUserProfile()" style="cursor: pointer;">
+                    <img id="chatHeaderPhoto" class="header-avatar" style="display: none;" />
+                    <span id="chatHeaderIcon" class="header-avatar">👤</span>
+                    <div class="chat-header-user-info">
+                        <h2 id="chatUserName"></h2>
+                        <span id="chatUserStatus" class="chat-user-status">Online</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="call-btn" onclick="startVideoCall()">📹</button>
+                    <button class="call-btn" onclick="startAudioCall()">📞</button>
+                </div>
+            </div>
+            <div id="messages"></div>
+            <div id="replyPreview" class="reply-preview hidden">
+                <div class="reply-preview-content">
+                    <div class="reply-preview-label">Replying to</div>
+                    <div id="replyText" class="reply-preview-text"></div>
+                </div>
+                <button class="cancel-reply-btn" onclick="cancelReply()">✕</button>
+            </div>
+            <div class="input-container">
+                <button class="attach-btn" onclick="document.getElementById('photoAttach').click()">📎</button>
+                <input type="file" id="photoAttach" accept="image/*" style="display: none;" onchange="attachPhoto()" />
+                <button class="emoji-btn" onclick="toggleEmojiPicker()">😊</button>
+                <input type="text" id="messageInput" placeholder="Type a message..." oninput="handleTyping()" />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+            <div id="emojiPicker" class="emoji-picker hidden">
+                <div class="emoji-grid" id="emojiGrid"></div>
+            </div>
+        </div>
+
+        <!-- Other User Profile Screen -->
+        <div id="otherUserProfileScreen" class="screen hidden">
+            <div class="header">
+                <button class="back-btn" onclick="backToChatFromProfile()">←</button>
+                <h2>Profile</h2>
+                <div></div>
+            </div>
+            <div class="profile-container">
+                <div class="profile-avatar">
+                    <img id="otherProfileImage" style="display: none; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+                    <span id="otherProfileIcon">👤</span>
+                </div>
+                <h2 id="otherProfileName" style="margin-top: 20px;"></h2>
+                <p id="otherProfileEmail"></p>
+                <p id="otherProfileStatus" style="margin-top: 10px;"></p>
+                <button onclick="backToChatFromProfile()" style="margin-top: 30px;">Back to Chat</button>
+            </div>
+        </div>
+
+        <!-- Audio Call Screen -->
+        <div id="audioCallScreen" class="screen hidden">
+            <div class="call-container">
+                <div class="call-avatar">
+                    <img id="callUserPhoto" style="display: none; width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+                    <span id="callUserIcon">👤</span>
+                </div>
+                <h2 id="callingUserName"></h2>
+                <p id="callStatus">Calling...</p>
+                <div class="call-buttons">
+                    <button class="end-call-btn" onclick="endCall()">End Call</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Call Screen -->
+        <div id="videoCallScreen" class="screen hidden">
+            <div class="video-call-container">
+                <div class="video-call-avatar">
+                    <img id="videoCallUserPhoto" style="display: none; width: 100%; height: 100%; border-radius: 20px; object-fit: cover;" />
+                    <span id="videoCallUserIcon">👤</span>
+                </div>
+                <div class="video-call-info">
+                    <h2 id="videoCallingUserName"></h2>
+                    <p id="videoCallStatus">Calling...</p>
+                </div>
+                <div class="video-call-buttons">
+                    <button class="end-call-btn" onclick="endVideoCall()">End Call</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Preview Modal -->
+        <div id="imageModal" class="image-modal hidden" onclick="closeImageModal()">
+            <button class="close-modal-btn" onclick="closeImageModal()">✕</button>
+            <img id="modalImage" src="" alt="Preview" />
         </div>
     </div>
-    <div id="chatMenu" class="dropdown-menu hidden">
-        <div class="dropdown-item" onclick="searchMessages()">🔍 Search</div>
-        <div class="dropdown-item" onclick="showStarredMessages()">⭐ Starred</div>
-        <div class="dropdown-item" onclick="showPinnedMessages()">📌 Pinned</div>
-        <div class="dropdown-item" onclick="showMediaGallery()">� Media</div>
-        <div class="dropdown-item" onclick="showDisappearingSettings()">⏱️ Disappearing</div>
-        <div class="dropdown-item" onclick="muteChatToggle()">🔕 Mute</div>
-        <div class="dropdown-item" onclick="archiveChat()">� Archive</div>
-        <div class="dropdown-item" onclick="showChatNotifSettings()">🔔 Notifications</div>
-        <div class="dropdown-item" onclick="showExportChat()">📤 Export Chat</div>
-        <div class="dropdown-item" onclick="changeChatWallpaper()">�️ Wallpaper</div>
-        <div class="dropdown-item" onclick="deleteChat()">🗑️ Delete Chat</div>
-        <div class="dropdown-item" onclick="blockUser()">🚫 Block</div>
-    </div>
-    <div id="messageSearchBar" class="hidden" style="padding:10px;background:#f0f0f0;">
-        <input type="text" id="messageSearchInput" placeholder="Search messages..." oninput="filterMessages()" style="margin:0;" />
-    </div>
-    <div id="typingIndicator" class="hidden" style="padding:5px 15px;font-size:13px;color:#667eea;font-style:italic;"></div>
-    <div id="messages"></div>
-    <div id="replyPreview" class="reply-preview hidden">
-        <div class="reply-preview-content">
-            <div class="reply-preview-label">Replying to</div>
-            <div id="replyText" class="reply-preview-text"></div>
-        </div>
-        <button class="cancel-reply-btn" onclick="cancelReply()">✕</button>
-    </div>
-    <div class="input-container">
-        <button class="attach-btn" onclick="showAttachMenu()">📎</button>
-        <button class="attach-btn" onclick="toggleVoiceRecord()" id="voiceBtn">🎤</button>
-        <button class="emoji-btn" onclick="toggleEmojiPicker()">😊</button>
-        <input type="text" id="messageInput" placeholder="Type a message..." oninput="handleTyping()" />
-        <button onclick="sendMessage()">Send</button>
-    </div>
-    <div id="attachMenu" class="attach-menu hidden">
-        <div class="attach-item" onclick="document.getElementById('photoAttach').click()">📷 Photo</div>
-        <div class="attach-item" onclick="document.getElementById('videoAttach').click()">🎥 Video</div>
-        <div class="attach-item" onclick="document.getElementById('docAttach').click()">📄 Document</div>
-        <div class="attach-item" onclick="shareLocation()">📍 Location</div>
-        <div class="attach-item" onclick="shareContact()">👤 Contact</div>
-        <div class="attach-item" onclick="showPollScreen()">📊 Poll</div>
-        <div class="attach-item" onclick="showScheduleModal()">⏰ Schedule</div>
-    </div>
-    <input type="file" id="photoAttach" accept="image/*" style="display:none;" onchange="attachFile('photo')" />
-    <input type="file" id="videoAttach" accept="video/*" style="display:none;" onchange="attachFile('video')" />
-    <input type="file" id="docAttach" accept=".pdf,.doc,.docx,.txt" style="display:none;" onchange="attachFile('doc')" />
-    <div id="emojiPicker" class="emoji-picker hidden">
-        <div class="emoji-grid" id="emojiGrid"></div>
-    </div>
-</div>
 
-<!-- Other User Profile -->
-<div id="otherUserProfileScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="backToChatFromProfile()">←</button>
-        <h2>Profile</h2><div></div>
-    </div>
-    <div class="profile-container">
-        <div class="profile-avatar">
-            <img id="otherProfileImage" style="display:none;width:100%;height:100%;border-radius:50%;object-fit:cover;" />
-            <span id="otherProfileIcon">👤</span>
-        </div>
-        <h2 id="otherProfileName" style="margin-top:20px;"></h2>
-        <p id="otherProfileUsername" style="color:#667eea;"></p>
-        <p id="otherProfileEmail"></p>
-        <p id="otherProfileBio" style="margin-top:5px;color:#666;font-style:italic;"></p>
-        <p id="otherProfileStatus" style="margin-top:10px;"></p>
-        <button onclick="blockUser()" style="margin-top:20px;background:#ff4444;width:auto;padding:10px 20px;">🚫 Block</button>
-        <button onclick="backToChatFromProfile()" style="margin-top:10px;">Back</button>
-    </div>
-</div>
-
-<!-- Starred Messages -->
-<div id="starredScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showScreen('chatScreen')">←</button>
-        <h2>⭐ Starred</h2><div></div>
-    </div>
-    <div id="starredList" style="flex:1;overflow-y:auto;padding:10px;background:#f5f5f5;"></div>
-</div>
-
-<!-- Audio Call -->
-<div id="audioCallScreen" class="screen hidden">
-    <div class="call-container">
-        <div class="call-avatar">
-            <img id="callUserPhoto" style="display:none;width:100%;height:100%;border-radius:50%;object-fit:cover;" />
-            <span id="callUserIcon">👤</span>
-        </div>
-        <h2 id="callingUserName"></h2>
-        <p id="callStatus">Calling...</p>
-        <div class="call-buttons">
-            <button class="end-call-btn" onclick="endCall()">📵</button>
-        </div>
-    </div>
-</div>
-
-<!-- Video Call -->
-<div id="videoCallScreen" class="screen hidden">
-    <div class="video-call-container">
-        <div class="video-call-avatar">
-            <img id="videoCallUserPhoto" style="display:none;width:100%;height:100%;border-radius:20px;object-fit:cover;" />
-            <span id="videoCallUserIcon">👤</span>
-        </div>
-        <div class="video-call-info">
-            <h2 id="videoCallingUserName"></h2>
-            <p id="videoCallStatus">Calling...</p>
-        </div>
-        <div class="video-call-buttons">
-            <button class="end-call-btn" onclick="endVideoCall()">📵</button>
-        </div>
-    </div>
-</div>
-
-<!-- Reaction Picker -->
-<div id="reactionPicker" class="reaction-picker hidden">
-    <span onclick="sendReaction('❤️')">❤️</span>
-    <span onclick="sendReaction('😂')">😂</span>
-    <span onclick="sendReaction('😮')">😮</span>
-    <span onclick="sendReaction('😢')">😢</span>
-    <span onclick="sendReaction('👍')">👍</span>
-    <span onclick="sendReaction('👎')">👎</span>
-</div>
-
-<!-- Image Modal -->
-<div id="imageModal" class="image-modal hidden" onclick="closeImageModal()">
-    <button class="close-modal-btn" onclick="closeImageModal()">✕</button>
-    <img id="modalImage" src="" alt="Preview" />
-</div>
-
-<!-- Forward Modal -->
-<div id="forwardModal" class="modal-overlay hidden">
-    <div class="modal-box">
-        <h3>↪️ Forward to</h3>
-        <div id="forwardUserList"></div>
-        <button onclick="closeForwardModal()" style="margin-top:15px;background:#999;">Cancel</button>
-    </div>
-</div>
-
-<!-- Wallpaper Modal -->
-<div id="wallpaperModal" class="modal-overlay hidden">
-    <div class="modal-box">
-        <h3>🖼️ Chat Wallpaper</h3>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0;">
-            <div onclick="setWallpaper('none')" style="height:60px;background:#f5f5f5;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;">None</div>
-            <div onclick="setWallpaper('#e8f5e9')" style="height:60px;background:#e8f5e9;border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setWallpaper('#e3f2fd')" style="height:60px;background:#e3f2fd;border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setWallpaper('#fce4ec')" style="height:60px;background:#fce4ec;border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setWallpaper('#fff8e1')" style="height:60px;background:#fff8e1;border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setWallpaper('#f3e5f5')" style="height:60px;background:#f3e5f5;border-radius:8px;cursor:pointer;"></div>
-        </div>
-        <button onclick="closeWallpaperModal()" style="background:#999;">Cancel</button>
-    </div>
-</div>
-
-<!-- Theme Color Modal -->
-<div id="themeModal" class="modal-overlay hidden">
-    <div class="modal-box">
-        <h3>🎨 Theme Color</h3>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0;">
-            <div onclick="setTheme('#667eea','#764ba2')" style="height:50px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setTheme('#25D366','#128C7E')" style="height:50px;background:linear-gradient(135deg,#25D366,#128C7E);border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setTheme('#ff6b6b','#ee5a24')" style="height:50px;background:linear-gradient(135deg,#ff6b6b,#ee5a24);border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setTheme('#f7b731','#f0932b')" style="height:50px;background:linear-gradient(135deg,#f7b731,#f0932b);border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setTheme('#a29bfe','#6c5ce7')" style="height:50px;background:linear-gradient(135deg,#a29bfe,#6c5ce7);border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setTheme('#fd79a8','#e84393')" style="height:50px;background:linear-gradient(135deg,#fd79a8,#e84393);border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setTheme('#00b894','#00cec9')" style="height:50px;background:linear-gradient(135deg,#00b894,#00cec9);border-radius:8px;cursor:pointer;"></div>
-            <div onclick="setTheme('#2d3436','#636e72')" style="height:50px;background:linear-gradient(135deg,#2d3436,#636e72);border-radius:8px;cursor:pointer;"></div>
-        </div>
-        <button onclick="closeThemeModal()" style="background:#999;">Cancel</button>
-    </div>
-</div>
-
-
-<!-- Media Gallery Screen -->
-<div id="mediaGalleryScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showScreen('chatScreen')">←</button>
-        <h2>📁 Media Gallery</h2><div></div>
-    </div>
-    <div id="mediaGalleryGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px;overflow-y:auto;flex:1;"></div>
-</div>
-
-<!-- Chat Archive Screen -->
-<div id="archiveScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="backToMain()">←</button>
-        <h2>📦 Archived Chats</h2><div></div>
-    </div>
-    <div id="archivedChatList" style="flex:1;overflow-y:auto;"></div>
-</div>
-
-<!-- Login History Screen -->
-<div id="loginHistoryScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showSettings()">←</button>
-        <h2>🔐 Login History</h2><div></div>
-    </div>
-    <div id="loginHistoryList" style="flex:1;overflow-y:auto;padding:10px;"></div>
-</div>
-
-<!-- Language Screen -->
-<div id="languageScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showSettings()">←</button>
-        <h2>🌐 Language</h2><div></div>
-    </div>
-    <div class="settings-container">
-        <div class="settings-item" onclick="setLanguage('en')"><span>🇺🇸 English</span><span id="lang_en">✓</span></div>
-        <div class="settings-item" onclick="setLanguage('hi')"><span>🇮🇳 Hindi</span><span id="lang_hi"></span></div>
-        <div class="settings-item" onclick="setLanguage('ur')"><span>🇵🇰 Urdu</span><span id="lang_ur"></span></div>
-    </div>
-</div>
-
-<!-- Group Info Screen -->
-<div id="groupInfoScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="backToMain()">←</button>
-        <h2>👥 Group Info</h2><div></div>
-    </div>
-    <div id="groupInfoContent" style="flex:1;overflow-y:auto;padding:20px;"></div>
-</div>
-
-<!-- Polls Screen -->
-<div id="pollScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showScreen('chatScreen')">←</button>
-        <h2>📊 Create Poll</h2><div></div>
-    </div>
-    <div style="padding:20px;">
-        <input type="text" id="pollQuestion" placeholder="Poll question..." />
-        <input type="text" id="pollOpt1" placeholder="Option 1" style="margin-top:10px;" />
-        <input type="text" id="pollOpt2" placeholder="Option 2" style="margin-top:10px;" />
-        <input type="text" id="pollOpt3" placeholder="Option 3 (optional)" style="margin-top:10px;" />
-        <input type="text" id="pollOpt4" placeholder="Option 4 (optional)" style="margin-top:10px;" />
-        <button onclick="sendPoll()" style="margin-top:20px;">Send Poll</button>
-    </div>
-</div>
-
-<!-- Auto Reply Screen -->
-<div id="autoReplyScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showSettings()">←</button>
-        <h2>🤖 Auto Reply</h2><div></div>
-    </div>
-    <div style="padding:20px;">
-        <div class="settings-item" onclick="toggleAutoReply()"><span>🤖 Auto Reply</span><span id="autoReplyStatus">Off</span></div>
-        <div style="margin-top:20px;">
-            <p style="margin-bottom:10px;font-weight:600;">Away Message:</p>
-            <textarea id="autoReplyMsg" placeholder="I'm away right now, will reply soon..." style="min-height:100px;"></textarea>
-            <button onclick="saveAutoReply()" style="margin-top:10px;">Save</button>
-        </div>
-    </div>
-</div>
-
-<!-- QR Code Screen -->
-<div id="qrScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showProfile()">←</button>
-        <h2>📱 My QR Code</h2><div></div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:30px;">
-        <div id="qrCodeDisplay" style="width:200px;height:200px;background:#f0f0f0;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:14px;text-align:center;padding:20px;border:3px solid #667eea;"></div>
-        <p style="margin-top:20px;color:#666;text-align:center;">Share this QR code so others can find you</p>
-        <button onclick="copyProfileLink()" style="margin-top:20px;width:auto;padding:12px 30px;">📋 Copy Profile Link</button>
-    </div>
-</div>
-
-<!-- Notification Per Chat Screen -->
-<div id="chatNotifScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showScreen('chatScreen')">←</button>
-        <h2>🔔 Chat Notifications</h2><div></div>
-    </div>
-    <div class="settings-container">
-        <div class="settings-item" onclick="toggleChatMuteNotif()"><span>🔕 Mute Notifications</span><span id="chatMuteStatus">Off</span></div>
-        <div class="settings-item" onclick="toggleMsgPreview()"><span>👁️ Message Preview</span><span id="msgPreviewStatus">On</span></div>
-        <div class="settings-item">
-            <span>🔔 Notification Tone</span>
-            <select onchange="setChatTone(this.value)" style="border:none;background:transparent;font-size:14px;">
-                <option value="default">Default</option>
-                <option value="ping">Ping</option>
-                <option value="chime">Chime</option>
-                <option value="none">None</option>
-            </select>
-        </div>
-        <div class="settings-item" onclick="toggleVibration()"><span>📳 Vibration</span><span id="vibrationStatus">On</span></div>
-    </div>
-</div>
-
-<!-- Pinned Messages Screen -->
-<div id="pinnedScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showScreen('chatScreen')">←</button>
-        <h2>📌 Pinned Messages</h2><div></div>
-    </div>
-    <div id="pinnedList" style="flex:1;overflow-y:auto;padding:10px;background:#f5f5f5;"></div>
-</div>
-
-<!-- Chat Export Screen -->
-<div id="exportScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showScreen('chatScreen')">←</button>
-        <h2>📤 Export Chat</h2><div></div>
-    </div>
-    <div style="padding:20px;display:flex;flex-direction:column;gap:15px;">
-        <p style="color:#666;">Export this chat as a text file</p>
-        <button onclick="exportChatTxt()">📄 Export as Text</button>
-        <button onclick="exportChatJSON()" style="background:#764ba2;">📋 Export as JSON</button>
-    </div>
-</div>
-
-<!-- Translate Modal -->
-<div id="translateModal" class="modal-overlay hidden">
-    <div class="modal-box">
-        <h3>🌐 Translate Message</h3>
-        <p id="translateOriginal" style="margin:15px 0;padding:10px;background:#f5f5f5;border-radius:8px;font-style:italic;"></p>
-        <select id="translateLang" style="width:100%;padding:10px;border-radius:8px;border:2px solid #e0e0e0;margin-bottom:15px;">
-            <option value="hi">Hindi</option>
-            <option value="en">English</option>
-            <option value="ur">Urdu</option>
-            <option value="ar">Arabic</option>
-            <option value="fr">French</option>
-            <option value="es">Spanish</option>
-        </select>
-        <div id="translateResult" style="padding:10px;background:#e8f5e9;border-radius:8px;min-height:50px;margin-bottom:15px;"></div>
-        <button onclick="doTranslate()">Translate</button>
-        <button onclick="closeTranslateModal()" style="background:#999;margin-top:10px;">Close</button>
-    </div>
-</div>
-
-<!-- Schedule Message Modal -->
-<div id="scheduleModal" class="modal-overlay hidden">
-    <div class="modal-box">
-        <h3>⏰ Schedule Message</h3>
-        <input type="text" id="scheduleText" placeholder="Message to schedule..." />
-        <input type="datetime-local" id="scheduleTime" style="margin-top:10px;" />
-        <button onclick="scheduleMessage()" style="margin-top:15px;">Schedule</button>
-        <button onclick="closeScheduleModal()" style="background:#999;margin-top:10px;">Cancel</button>
-    </div>
-</div>
-
-<!-- 2FA Screen -->
-<div id="twoFAScreen" class="screen hidden">
-    <div class="header">
-        <button class="back-btn" onclick="showSettings()">←</button>
-        <h2>🔐 Two-Factor Auth</h2><div></div>
-    </div>
-    <div style="padding:20px;">
-        <div class="settings-item" onclick="toggle2FA()"><span>🔐 2FA</span><span id="twoFAStatus">Off</span></div>
-        <div id="twoFASetup" class="hidden" style="margin-top:20px;">
-            <p style="margin-bottom:10px;color:#666;">Set a 6-digit backup PIN:</p>
-            <input type="password" id="twoFAPin" placeholder="6-digit PIN" maxlength="6" />
-            <button onclick="save2FA()" style="margin-top:10px;">Save</button>
-        </div>
-    </div>
-</div>
-
-</div>
-<script type="module" src="firebase-app.js"></script>
+    <script src="final-app.js"></script>
 </body>
 </html>
